@@ -54,7 +54,7 @@ namespace ImagineMC_Core
                 return "Failed";
             }
         }
-        public string CheckGame(string PackageFile, string URL,string FileName)
+        public string CheckGame(string PackageFile, string URL, string FileName)
         /*
          * PackageFile:the name of game resource file,such as “rapo.zip”.
          * The Package should be a zip file.
@@ -68,48 +68,131 @@ namespace ImagineMC_Core
             else
             {
                 string installResult = InstallGame(URL, PackageFile);
-                if (installResult=="Installed")
+                if (installResult == "Installed")
                 {
                     return "Success";
+                    //Installed game package.
                 }
                 else
                 {
                     return "Failed";
+                    //Check the packet or Internet connection , and try again.
                 }
             }
-    }
-        public string InstallGame(string URL,string FileName)
+        }
+        public string InstallGame(string URL, string FileName)
         {
             DownloadFile(URL, FileName);
-            UnZip(FileName,@".\");
+            //Download the package from given URL.
+            UnZip(FileName, @".\");
+            //Unzip the package to lanuncher's path.
             string result = CheckGame(FileName);
-            if(result=="Success")
+            //Check again,is it installed?
+            if (result == "Success")
             {
                 return "Success";
             }
             else
             {
                 return "Unreachable FileName";
+                //Check your URL,is it point to the package?
+                //Check your package,is it a zipped file?
+                //Check your Internet connection?
             }
         }
+
         public string GetServerList(string URL)
         {
             if (Directory.Exists(@".\.minecraft"))
             {
                 DownloadFile(URL, @".\.minecraft\servers.dat");
+                //This file should be a json file.
+
                 if (File.Exists(@".\.minecraft\servers.dat"))
                 {
                     return "Success";
+                    //Server list has already got now.
                 }
                 else
                 {
-                    return "URL unreachable";
+                    return @"URL unreachable";
+                    //Is the game installed?
+                    //Check folder ".minecraft" exists or not.
+                    //Is the URL point to a wrong file?
+                    //Check your Internet connection.
                 }
             }
             else
             {
                 return ("Path \".\\.minecraft\" unreachable.");
+                //Check the game package , is it installed?
+                //Check the zipped file , is it include ".minecraft" folder?
+                //Warning , zhe zipped file should be include ".minecraft" in the first dir.
             }
+        }
+        public string GetWindowsJava(string URL)
+        {
+            //This part only work in Windows Environment.
+            //If you are running Linux,use GetLinuxJava().
+            //If you are in other systems,you should download Java by yourself.
+            if (File.Exists(".\\java\\bin\\java.exe"))
+            {
+                return ("Success");
+            }
+            else
+            {
+                DownloadFile(URL, @".\java.zip");
+                //Java package should be a zipped file.And ".\bin\java.exe" must be exists.
+                UnZip(@".\java.zip", @".\java");
+                //Unzip Java package into folder ".\java".
+                //File "java.exe" should be in ".\java\bin\".
+                if (File.Exists(".\\java\\bin\\java.exe"))
+                {
+                    return "Success";
+                    //Now you should run Minecraft as ".\java\bin\java.exe"
+                }
+                else
+                {
+                    return "Java : Env Unreachable";
+                    //Check your package , does ".\bin\java.exe" exists?
+                    //Check your given URL , does it point to a wrong file?
+                    //Check your package , is it a zipped file?(not rar 7z or others)
+                    //Check your Internet Connection .
+                }
+            }
+
+        }
+        public string GetLinuxJava(string URL)
+        {
+            //This part only work in Linux Environment.
+            //If you are running Windows,use GetWindowsJava().
+            //If you are in other systems,you should download Java by yourself.
+            if (File.Exists(".\\java\\bin\\java"))
+            {
+                return ("Success");
+            }
+            else
+            {
+                DownloadFile(URL, @".\java.zip");
+                //Java package should be a zipped file.And ".\bin\java" must be exists.
+                UnZip(@".\java.zip", @".\java");
+                //Unzip Java package into folder ".\java".
+                //File "java.exe" should be in ".\java\bin\".
+                if (File.Exists(".\\java\\bin\\java"))
+                {
+                    return "Success";
+                    //Now you should run Minecraft as ".\java\bin\java"
+                }
+                else
+                {
+                    return "Java : Env Unreachable";
+                    //Check your package , does ".\bin\java" exists?
+                    //Check your given URL , does it point to a wrong file?
+                    //Check your package , is it a zipped file?(not rar 7z or others)
+                    //Check your Internet Connection .
+                }
+            }
+
         }
         private static bool ZipDirectory(string folderToZip, ZipOutputStream zipStream, string parentFolderName)
         {
